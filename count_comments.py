@@ -57,24 +57,17 @@ for i in range(len(matches_1)):
         # Find numbers between 1 and 10
         pattern_number = r'\b(10|[1-9])\b'
         match_2 = re.search(pattern_number, match_2)
-        
+
         try:
             match_2 = int(match_2.group(1))
             print(f"Found number for match_1 '{match_1}': {match_2}")  # Debugging output
+            # Update count_dict
+            count_dict[match_2] += 1
+            unique_all_data.append((match_1, match_2))
         except:
-            print(match_2)
+            comment = match_2
             match_2 = 0  # Assign 0 if not found
-
-        # Update count_dict
-        count_dict[match_2] += 1
-        unique_all_data.append((match_1, match_2))  # Add to unique_all_data
-
-        # Additional check for match_2 == 9
-        if match_2 == 9:
-            voted_9_data.append((match_1, match_2))  # Add to voted_9_data
-
-        elif match_2 == 0:
-            wrong_match.append((match_1, match_2))
+            wrong_match.append((match_1, comment))
 
 # Convert unique_all_data and voted_9_data to DataFrames
 df_unique_all = pd.DataFrame(unique_all_data, columns=['Column 1', 'Column 2'])
@@ -85,7 +78,6 @@ df_wrong_match = pd.DataFrame(wrong_match, columns=['Column 1', 'Column 2'])
 with pd.ExcelWriter('matches.xlsx') as writer:
     df_all_raw.to_excel(writer, sheet_name='all_raw', index=False)
     df_unique_all.to_excel(writer, sheet_name='unique_all', index=False)
-    df_voted_9.to_excel(writer, sheet_name='voted_9', index=False)
     df_wrong_match.to_excel(writer, sheet_name='wrong match', index=False)
 
 # Print the counts of unique match_2 occurrences
